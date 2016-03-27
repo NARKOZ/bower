@@ -1,208 +1,126 @@
-BOWER [![Build Status](https://secure.travis-ci.org/twitter/bower.png)](http://travis-ci.org/twitter/bower)
-=====
+# Bower - A package manager for the web
 
-### Introduction
+> Bower needs resources for its maintenance. Please fill [this form](https://docs.google.com/forms/d/1i-Opb-uPdqUBBZQSbngv3Y3bfolG1gbBvtRLfxMnzRE/viewform?c=0&w=1) if you think you can help.
 
-Bower is a package manager for the web. Bower lets you easily install assets such as images, CSS and JavaScript, and manages dependencies for you.
+[![Build Status](https://travis-ci.org/bower/bower.svg?branch=master)](https://travis-ci.org/bower/bower)
+[![Windows Build](https://ci.appveyor.com/api/projects/status/jr6vfra8w84plh2g/branch/master?svg=true)](https://ci.appveyor.com/project/sheerun/bower/history)
+[![Coverage Status](https://img.shields.io/coveralls/bower/bower.svg)](https://coveralls.io/r/bower/bower?branch=master)
+[![Discord chat](https://img.shields.io/badge/discord-join%20chat%20%E2%86%92-brightgreen.svg?style=flat)](https://discord.gg/0fFM7QF0KpZRh2cY)
+[![Issue Stats](http://issuestats.com/github/bower/bower/badge/pr?style=flat)](http://issuestats.com/github/bower/bower)
+[![Issue Stats](http://issuestats.com/github/bower/bower/badge/issue?style=flat)](http://issuestats.com/github/bower/bower)
 
-For example, to install a package, run:
+<img align="right" height="300" src="http://bower.io/img/bower-logo.png">
 
-    bower install jquery
+---
 
-This will download jQuery to `./components/jquery`. That's it. The idea is that Bower does package management and package management only.
+Bower offers a generic, unopinionated solution to the problem of **front-end package management**, while exposing the package dependency model via an API that can be consumed by a more opinionated build stack. There are no system wide dependencies, no dependencies are shared between different apps, and the dependency tree is flat.
 
-### Installing Bower
+Bower runs over Git, and is package-agnostic. A packaged component can be made up of any type of asset, and use any type of transport (e.g., AMD, CommonJS, etc.).
 
-Bower is installed using [Node](http://nodejs.org/) and [npm](http://npmjs.org/) (oh my, how meta).
+**View complete docs on [bower.io](http://bower.io)**
 
-    npm install bower -g
+[View all packages available through Bower's registry](http://bower.io/search/).
 
-### Usage
+## Install
 
-Your best friend at this stage is probably `bower --help`.
-
-To install a package:
-
-    bower install jquery
-    bower install git://github.com/maccman/package-jquery.git
-    bower install http://code.jquery.com/jquery-1.7.2.js
-    bower install ./repos/jquery
-
-As you can see, packages can be installed by name, Git endpoint, URL or local path.
-
-To update a package, reference it by name:
-
-    bower update jquery-ui
-
-To list installed packages:
-
-    bower list
-
-To search for packages:
-
-    bower search [name]
-
-To list all the available packages, just call `bower search` without specifying a name.
-
-### Defining a package
-
-You can create a `component.json` file in your project's root, specifying all of its dependencies. This is similar to Node's `package.json`, or Ruby's `Gemfile`, and is useful for locking down a projects' dependencies.
-
-```json
-{
-  "name": "myProject",
-  "version": "1.0.0",
-  "main": "./path/to/main.css",
-  "dependencies": {
-    "jquery": "~1.7.2"
-  }
-}
+```sh
+$ npm install -g bower
 ```
 
-Put this under your project's root, listing all of your dependencies. When you run `bower install`, Bower will read this `component.json` file, resolve all the relevant dependencies and install them.
+Bower depends on [Node.js](http://nodejs.org/) and [npm](http://npmjs.org/). Also make sure that [git](http://git-scm.com/) is installed as some bower
+packages require it to be fetched and installed.
 
-For now, `name`, `version`, `main`, and `dependencies` are the only properties that are used by Bower. If you have several files you're distributing as part of your package, pass an array to `main` like this:
 
-```json
-{
-  "name": "myProject",
-  "version": "1.0.0",
-  "main": ["./path/to/app.css", "./path/to/app.js", "./path/to/sprite.img"],
-  "dependencies": {
-    "jquery": "~1.7.2"
-  }
-}
+## Usage
+
+See complete command line reference at [bower.io/docs/api/](http://bower.io/docs/api/)
+
+### Installing packages and dependencies
+
+```sh
+# install dependencies listed in bower.json
+$ bower install
+
+# install a package and add it to bower.json
+$ bower install <package> --save
+
+# install specific version of a package and add it to bower.json
+$ bower install <package>#<version> --save
 ```
 
-### Installing dependencies
+### Using packages
 
-Dependencies are installed locally via the `bower install` command. First they’re resolved to find conflicts. Then they’re downloaded and unpacked in a local sub directory called `./components`, for example:
+We discourage using bower components statically for performance and security reasons (if component has an `upload.php` file that is not ignored, that can be easily exploited to do malicious stuff).
 
+The best approach is to process components installed by bower with build tool (like [Grunt](http://gruntjs.com/) or [gulp](http://gulpjs.com/)), and serve them concatenated or using a module loader (like [RequireJS](http://requirejs.org/)).
 
-```
-/component.json
-/components/jquery/index.js
-/components/jquery/component.json
-```
+### Uninstalling packages
 
-You can also install packages one at a time `bower install git://my/git/thing`
+To uninstall a locally installed package:
 
-There are no system wide dependencies, no dependencies are shared between different apps, and the dependency tree is flat.
-
-### Deploying
-
-The easiest approach is to use bower statically, just reference the packages manually from a script tag:
-
-    <script src="components/jquery/index.js"></script>
-
-For more complex projects, you'll probably want to concatenate your scripts. Bower is just a package manager, but there are lots of awesome libraries out there to help you do this, such as [Sprockets](https://github.com/sstephenson/sprockets) and [RequireJS](http://requirejs.org/).
-
-For example, to use Sprockets:
-
-```ruby
-environment = Sprockets::Environment.new
-environment.append_path 'components'
-environment.append_path 'public'
-run environment
+```sh
+$ bower uninstall <package-name>
 ```
 
-### Package Consumption
+### prezto and oh-my-zsh users
 
-Bower also makes available a source mapping – this can be used by build tools to easily consume bower components.
+On `prezto` or `oh-my-zsh`, do not forget to `alias bower='noglob bower'` or `bower install jquery\#1.9.1`
 
-If you pass the option `--map` to bower's `list` command it will generate a json with dependency objects. Alternatively, you can pass the `--paths` flag to the `list` command to get a simple path to name mapping:
+### Never run Bower with sudo
 
-```json
-{
-  "backbone": "components/backbone/index.js",
-  "jquery": "components/jquery/index.js",
-  "underscore": "components/underscore/index.js"
-}
+Bower is a user command; there is no need to execute it with superuser permissions.
+
+### Windows users
+
+To use Bower on Windows, you must install
+[Git for Windows](http://git-for-windows.github.io/) correctly. Be sure to check the
+options shown below:
+
+<img src="https://cloud.githubusercontent.com/assets/10702007/10532690/d2e8991a-7386-11e5-9a57-613c7f92e84e.png" width="534" height="418" alt="Git for Windows" />
+
+<img src="https://cloud.githubusercontent.com/assets/10702007/10532694/dbe8857a-7386-11e5-9bd0-367e97644403.png" width="534" height="418" alt="Git for Windows" />
+
+Note that if you use TortoiseGit and if Bower keeps asking for your SSH
+password, you should add the following environment variable: `GIT_SSH -
+C:\Program Files\TortoiseGit\bin\TortoisePlink.exe`. Adjust the `TortoisePlink`
+path if needed.
+
+### Ubuntu users
+
+To use Bower on Ubuntu, you might need to link `nodejs` executable to `node`:
+
+```
+sudo ln -s /usr/bin/nodejs /usr/bin/node
 ```
 
-### Authoring packages
+## Configuration
 
-To register a new package, it's as simple as specifying a `component.json`, pushing the package to a Git endpoint, say GitHub, and running:
-
-    bower register myawesomepackagename git://github.com/maccmans/face
-
-There's no authentication or user management. It's on a first come, first served basis. Think of it like a URL shortener. Now anyone can run `bower install myawesomepackagename`, and get your library installed.
-
-### Philosophy
-
-Currently, people are managing dependencies, such as JavaScript libraries, manually. This sucks, and we want to change it.
-
-In a nutshell, Bower is a generic tool which will resolve dependencies and lock packages down to a version. It runs over Git, and is package-agnostic. A package may contain JavaScript, CSS, images, etc., and doesn't rely on any particular transport (AMD, CommonJS, etc).
-
-Bower then makes available a simple programatic api which exposes the package dependency model, so that existing build tools (like Sprockets, LoadBuilder, curls.js, Ender, etc.) can consume it and build files accordingly.
+Bower can be configured using JSON in a `.bowerrc` file. Read over available options at [bower.io/docs/config](http://bower.io/docs/config).
 
 
-### FAQ
+## Support
 
-**What distinguishes Bower from Jam, Volo or Ender? What does it do better?**
+* [Discord chat](https://discord.gg/0fFM7QF0KpZRh2cY)
+* [StackOverflow](http://stackoverflow.com/questions/tagged/bower)
+* [Mailinglist](http://groups.google.com/group/twitter-bower) - twitter-bower@googlegroups.com
 
-Bower is a lower level component then Jam, Volo, or Ender. These managers could consume bower as a dependency.
+## Contributing
 
-Bower's aim is simply to install git paths, resolve dependencies from a component.json, check versions, and then provide an api which reports on these things. Nothing more. This is a major diversion from past attempts at browser package management.
+We welcome [contributions](https://github.com/bower/bower/graphs/contributors) of all kinds from anyone. Please take a moment to review the [guidelines for contributing](CONTRIBUTING.md).
 
-Bower is working under the assumption that there is a single, common problem in frontend application development: dependency resolution. Past attempts (Jam, Volo, Ender) try to tackle this problem in such a way that they actually end up alienating and further segregating the javascript community around transports (sprockets, commonjs, requirejs, regular script tags).
-
-Bower offers a generic, unopinionated solution to the problem of package management, while exposing an api that can be consumed by a more opinionated build stack.
-
-**Volo is an arguably more established project and works with the GitHub search API. Will it take long for Bower to contain a decent number of packages?**
-
-Bower (being a git powered package manager) should, in theory, be capable of consuming most every package that Volo does, with the additional benefit of supporting internal networks and other git repositories not hosted on github.
-
-**We recently saw what happened when the NPM registry went down. Is a central point of failure possible for Bower and if so, do you have redundancy planned?**
-
-There's no redundancy planned at the moment, as bower just installs git urls. It's up to the url provider to establish redundancy.
-
-**Isn't having a package.json file going to conflict with my npm's package.json? Will this be a problem?**
-
-Don't use a `package.json` – use a `component.json`.
-
-**Bower is an open-source Twitter project. How well can we expect it to be maintained in the future?**
-
-Twitter is in the process of migrating it's frontend architecture onto bower, so it's fairly safe to say it will be maintained and invested in going forward.
+* [Bug reports](https://github.com/bower/bower/wiki/Report-a-Bug)
+* [Feature requests](CONTRIBUTING.md#features)
+* [Pull requests](CONTRIBUTING.md#pull-requests)
 
 
-### Contact
+Note that on Windows for tests to pass you need to configure Git before cloning:
 
-Have a question? Ask on our mailing list!
-
-twitter-bower@googlegroups.com
-
-http://groups.google.com/group/twitter-bower
-
-### Authors
-
-+ [@fat](http://github.com/fat)
-+ [@maccman](http://github.com/maccman)
-
-Thanks for assistance and contributions:
-
-+ [@addyosmani](http://github.com/addyosmani)
-+ [@angus-c](http://github.com/angus-c)
-+ [@borismus](http://github.com/borismus)
-+ [@chriseppstein](http://github.com/chriseppstein)
-+ [@danwrong](http://github.com/danwrong)
-+ [@desandro](http://github.com/desandro)
-+ [@isaacs](http://github.com/isaacs)
-+ [@josh](http://github.com/josh)
-+ [@jrburke](http://github.com/jrburke)
-+ [@mklabs](http://github.com/mklabs)
-+ [@paulirish](http://github.com/paulirish)
-+ [@rvagg](http://github.com/rvagg)
-+ [@sindresorhus](http://github.com/sindresorhus)
-+ [@SlexAxton](http://github.com/SlexAxton)
-+ [@sstephenson](http://github.com/sstephenson)
-+ [@tomdale](http://github.com/tomdale)
-+ [@visionmedia](http://github.com/visionmedia)
-+ [@wagenet](http://github.com/wagenet)
-+ [@wycats](http://github.com/wycats)
+```
+git config --global core.autocrlf input
+```
 
 ## License
 
-Copyright 2012 Twitter, Inc.
+Copyright (c) 2016 Twitter and [other contributors](https://github.com/bower/bower/graphs/contributors)
 
 Licensed under the MIT License
